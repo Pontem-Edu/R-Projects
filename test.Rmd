@@ -1,0 +1,100 @@
+---
+title: "testing"
+author: "me"
+date: "7/1/2021"
+output: 
+    html_document:
+      toc: true
+      toc_float:
+        collapsed: false
+        smooth_scroll: false
+      toc_depth: 3
+dateMy: "`r format(Sys.time(),'%d %B %Y')`"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(fig.align = 'center', out.width = '90%', echo = TRUE)
+c="China"
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+investment_annual_summary <- read_csv("https://assets.datacamp.com/production/repositories/5756/datasets/d0251f26117bbcf0ea96ac276555b9003f4f7372/investment_annual_summary.csv")
+investment_annual_summary
+investment_services_projects<-read_csv("https://assets.datacamp.com/production/repositories/5756/datasets/bcb2e39ecbe521f4b414a21e35f7b8b5c50aec64/investment_services_projects.csv")
+investment_services_projects
+```
+## Testing R code for dplyr 2012-china
+```{r in_investment_services_projects_2012, echo=FALSE}
+in_investment_services_projects_2012<-investment_services_projects%>%
+      filter(country=="China",
+             date_disclosed>="2011-07-01",
+             date_disclosed<="2012-06-30")
+ in_investment_services_projects_2012
+```
+
+```{r in_investment_services_projects_2012 sum}
+in_investment_services_projects_2012_sum<-in_investment_services_projects_2012%>%
+      summarize(sum_total_investment = sum(total_investment, na.rm = TRUE)) 
+```
+The total investment amount for all proj in China in 2012 fiscal year was `r in_investment_services_projects_2012_sum` million dollars
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r}
+ggplot(investment_annual_summary, aes(x = fiscal_year, y = dollars_in_millions, color = region)) +
+  geom_line() +
+  labs(
+    title = "Investment Annual Summary",
+    x = "Fiscal Year",
+    y = "Dollars in Millions"
+  )
+```
+### Investment Projects in Brazil
+
+The `investment_services_projects` dataset provides information about each investment project from 2012 to 2018. Information listed includes the project name, company name, sector, project status, and investment amounts.
+```{r China-investment-projects}
+china_investment_projects <- investment_services_projects %>%
+  filter(country == c) 
+
+ggplot(china_investment_projects, aes(x = date_disclosed, y = total_investment, color = status)) +
+  geom_point() +
+  labs(
+    title = "Investment Services Projects in China",
+    x = "Date Disclosed",
+    y = "Total IFC Investment in Dollars in Millions"
+  )
+```
+
+### Investment Projects in Brazil in 2018
+
+```{r brazil-investment-projects-2018}
+brazil_investment_projects_2018 <- investment_services_projects %>%
+  filter(country == c,
+         date_disclosed >= "2017-07-01",
+         date_disclosed <= "2018-06-30") 
+
+ggplot(brazil_investment_projects_2018, aes(x = date_disclosed, y = total_investment, color = status)) +
+  geom_point() +
+  labs(
+    title = "Investment Services Projects in 2018",
+    x = "Date Disclosed",
+    y = "Total IFC Investment in Dollars in Millions"
+  ) 
+```
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r tables}
+kable(investment_annual_summary, col.names = c("fiscal_year","region","dollars_in_millions"), align = "ccc", caption = "Table 1.1 The total investment summary for each region for the 2012 to 2018 fiscal years.")
+```
